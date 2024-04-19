@@ -21,6 +21,12 @@
 #define _IO_H
 
 
+/*
+ * Type of an IO operation.
+ */
+typedef ssize_t (*ioop_t) (int, void *, size_t);
+
+
 #ifdef __cplusplus
 extern          "C" {
 #endif                          /* __cplusplus */

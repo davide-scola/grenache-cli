@@ -33,6 +33,38 @@
 
 
 /**
+ * Perform an I/O operation.
+ *
+ * @param ioop_t op
+ *   The I/O operation.
+ * @param int fd
+ *   The file descriptor.
+ * @param char *buffer
+ *   The buffer to operate on.
+ * @param size_t length
+ *   On how many bytes to operate.
+ *
+ * @return int
+ *   The number of bytes it was operated on, -1 otherwise.
+ */
+static INLINE ALWAYS_INLINE ssize_t ioop(ioop_t op, int fd, char *buffer, size_t length) {
+  ssize_t size;
+  size_t nbytes = 0;
+
+  while (nbytes < length) {
+    if ((size = op(fd, buffer + nbytes, length - nbytes)) < 1) {
+      /* Return error even when EINTR. */
+      return -1;
+    }
+
+    nbytes += size;
+  }
+
+  return nbytes;
+}
+
+
+/**
  * Read from a file descriptor.
  *
  * @param int fd
@@ -46,16 +78,10 @@
  *   0 if all the bytes have been read, -1 otherwise.
  */
 int ioread(int fd, char *buffer, size_t length) {
-  size_t size;
-  size_t nread = 0;
+  ssize_t nread;
 
-  while (nread < length) {
-    if ((size = read(fd, buffer + nread, length - nread)) < 1) {
-      /* Return error even when EINTR. */
-      return -1;
-    }
-
-    nread += size;
+  if ((nread = ioop(read, fd, buffer, length)) == -1) {
+    return -1;
   }
 
   *(buffer + nread) = '\0';
@@ -76,16 +102,8 @@ int ioread(int fd, char *buffer, size_t length) {
  *   0 if all bytes have been written, -1 otherwise.
  */
 int iowrite(int fd, char *buffer, size_t length) {
-  size_t size;
-  size_t nwrote = 0;
-
-  while (nwrote < length) {
-    if ((size = write(fd, buffer + nwrote, length - nwrote)) < 1) {
-      /* Return error even when EINTR. */
-      return -1;
-    }
-
-    nwrote += size;
+  if (ioop((ioop_t) write, fd, buffer, length) == -1) {
+    return -1;
   }
 
   (void) fsync(fd);
