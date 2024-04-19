@@ -27,6 +27,6 @@ MAINTAINERCLEANFILES = \
 $(dist_man1_MANS)
 
 %.1: $(top_srcdir)/src/%.in $(top_srcdir)/doc/Makefile.am
-	$(HELP2MAN) --no-info --output=$@ --version-string="$(PACKAGE_VERSION)" \
-		--name="manual page for $(notdir $(basename $<)) ($(PACKAGE_NAME)) $(PACKAGE_VERSION) on $(host_cpu)-$(host_os)" \
+	$(HELP2MAN) --no-info --output=$@ \
+		--name="manual page for $(PACKAGE_NAME) version $(PACKAGE_VERSION) on $(host_cpu)-$(host_os)" \
 		"${SHELL} $(top_builddir)/src/$(notdir $(basename $<))$(EXEEXT)"
