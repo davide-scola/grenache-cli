@@ -52,6 +52,7 @@ AX_MSG_BOLD([Checking for required programs])
 
 LT_INIT
 AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_CPP
 AM_PROG_CC_C_O
 AC_PROG_INSTALL
